@@ -81,6 +81,6 @@ INSTALLED_APPS = (
 )
 
 CLOUD_ACCOUNTS = (
-    ('RACKSPACE', ('ssimasanti', '931cff19c69f769f7063a0e38d454e03')),
+    ('rackspace1', 'RACKSPACE', ('ssimasanti', '931cff19c69f769f7063a0e38d454e03')),
 )
 
