@@ -18,3 +18,4 @@ setupgit:
 	@echo "*.deb" >> .git/info/exclude
 	@echo "build/" >> .git/info/exclude
 	@echo "packages/deb/" >> .git/info/exclude
+	@echo "env/" >> .git/info/exclude
