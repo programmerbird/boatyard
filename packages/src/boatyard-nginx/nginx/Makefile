@@ -9,6 +9,7 @@ CURDIR=`pwd`
 UWSGI_URL=http://projects.unbit.it/downloads/${UWSGI}.tar.gz
 NGINX_URL=http://nginx.org/download/${NGINX}.tar.gz
 NGINX_OPTS= --conf-path=/etc/nginx/nginx.conf \
+		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/ \
 	    --error-log-path=/var/log/nginx/error.log \
 	    --pid-path=/var/run/nginx.pid \

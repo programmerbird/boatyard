@@ -23,7 +23,7 @@ DAEMON_OPTS="--processes 6 --harakiri 6 --disable-logging --master \
 			--pidfile $PIDFILE \
 			--daemonize /tmp/boatyard-{{BOATYARD_APP}}.out \
 			--socket $SOCKFILE \
-			--home /home/{{BOATYARD_USER}}/deployed-apps/{{BOATYARD_APP}}/env
+			--home /home/{{BOATYARD_USER}}/deployed-apps/{{BOATYARD_APP}}/env \
 			--chmod-socket --xmlconfig /home/{{BOATYARD_USER}}/deployed-apps/{{BOATYARD_APP}}/scripts/uwsgi.conf"
 
 set -e

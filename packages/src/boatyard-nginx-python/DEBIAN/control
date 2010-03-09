@@ -10,3 +10,4 @@ Installed-Size: 1024
 Maintainer: Sittipon Simasanti [ssimasanti@gmail.com]
 Description: Bird Django Web Server
 Provides: boatyard-startapp-python
+Conflicts: python-virtualenv

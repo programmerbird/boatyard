@@ -87,9 +87,9 @@ then
 	done
 	
 	
-	if [ ! -f "$APP_PATH/webs/requirements.txt" ]
+	if [ -f "$APP_PATH/webs/requirements.txt" ]
 	then 
-		$APP_PATH/env/pip install -r "$APP_PATH/webs/requirements.txt"
+		$APP_PATH/env/bin/pip install -r "$APP_PATH/webs/requirements.txt"
 	fi
 	/etc/init.d/boatyard-{{BOATYARD_APP}} reload
 fi
