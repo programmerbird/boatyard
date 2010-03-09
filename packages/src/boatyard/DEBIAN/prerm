@@ -1,0 +1,5 @@
+#!/bin/sh
+
+deluser boatyard
+rm /usr/bin/boatyard-adduser
+rm /var/boatyard/libs/dict/words

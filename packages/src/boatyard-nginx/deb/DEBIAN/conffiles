@@ -1,0 +1,3 @@
+/etc/ufw/applications.d/nginx
+/etc/init.d/nginx
+/etc/logrotate.d/nginx

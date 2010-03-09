@@ -1,0 +1,8 @@
+#!/bin/sh
+
+yes '' | adduser --no-create-home --disabled-login boatyard
+
+chown -R boatyard:boatyard /etc/boatyard/configs/
+ln -s /etc/boatyard/bin/boatyard-adduser.sh /usr/bin/boatyard-adduser 
+
+ln -s /var/boatyard/libs/dict/american-english /var/boatyard/libs/dict/words
