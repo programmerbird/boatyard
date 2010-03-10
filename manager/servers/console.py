@@ -68,8 +68,7 @@ def edit_field(form, field_name):
 			form.values[field_name] = choices[choice]
 			break
 	else:
-		print ''
-		form.values[field_name] = prompt(field.label + ':')
+		form.values[field_name] = prompt(field.label + ':', default=form.values[field_name])
 
 def get_form_display_value(form, field_name):
 	field = form[field_name]
@@ -80,7 +79,7 @@ def get_form_display_value(form, field_name):
 		return form.values[field_name]
 
 
-def menu(items, ask='Enter a number to select or press ENTER to continue:'):
+def menu(items, ask='Enter a number to select or press ENTER to continue:', null=True):
 	while True:
 		print '' 
 		choices = {}
@@ -91,24 +90,36 @@ def menu(items, ask='Enter a number to select or press ENTER to continue:'):
 			i += 1
 		print ''
 		choice = prompt(ask)
-		if choice == '':
+		if null and choice == '':
 			return None
 		if choice in choices:
 			return choices[choice]
-		
-def edit_form(form):
+
+def _clean_form(form):
 	# clean form
 	form.values = getattr(form, 'values', {})
 	for x in form.fields:
-		form.values[x] = field_value(form[x])
+		form.values[x] = form.values.get(x, field_value(form[x]))
+
+def new_form(form):
+	_clean_form(form)
+	for x in form.fields:
+		if form[x].field.required:
+			edit_field(form, x)
+	return edit_form(form)
 	
+def edit_form(form):
+	_clean_form(form)
 	while True:
 		field_name = menu(
-			[ (x, form[x].label + ': [ ' + unicode(get_form_display_value(form, x)) + ' ]') for x in form.fields ]
+			[ (x, form[x].label + ': [ ' + unicode(get_form_display_value(form, x)) + ' ]') for x in form.fields ],
 		)
 		if field_name is None:
 			try:
-				testform = form.__class__(instance=getattr(form, 'instance'), data=form.values)
+				if hasattr(form, 'instance'):
+					testform = form.__class__(instance=form.instance, data=form.values)
+				else:
+					testform = form.__class__(data=form.values)
 				if testform.is_valid():
 					return testform
 				raise_form_error(testform)
