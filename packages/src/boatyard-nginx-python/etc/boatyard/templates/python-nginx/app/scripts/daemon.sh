@@ -16,8 +16,6 @@ DESC={{BOATYARD_APP}}
 
 DAEMON=/etc/uwsgi/uwsgi26
 PIDFILE=/var/run/$NAME.pid
-UID=`id --user {{BOATYARD_USER}}`
-GID=`id --group {{BOATYARD_USER}}`
 SOCKFILE=/tmp/boatyard-{{BOATYARD_APP}}.sock
 DAEMON_OPTS="--processes 6 --harakiri 6 --disable-logging --master \
 			--pidfile $PIDFILE \
