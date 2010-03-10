@@ -15,10 +15,6 @@ class Command(BaseCommand):
 			provider = menu([
 				(x, unicode(x)) for x in Provider.objects.all() 
 			])
-			
 		if provider:
-			form = DRIVERS_MAP[provider.driver](data=json.loads(provider.storage))
-			form = edit_form(form)
-			provider.storage = json.dumps(form.data)
-			provider.save()
-		
+			provider.delete()
+
