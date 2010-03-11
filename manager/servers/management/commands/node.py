@@ -5,6 +5,7 @@ from django.db.models.query_utils import CollectedObjects
 from django import forms
 from servers.console import menu, new_form, edit_form
 from servers.models import *
+from servers.utils import get_service 
 from fabric.api import *
 
 class ServiceNotInstalled(Exception):
@@ -12,20 +13,15 @@ class ServiceNotInstalled(Exception):
 
 	
 def dispatch(node, service_args):
-	import services 
 	service_name = service_args[0]
 	service_args = service_args[1:]
 	
-	__import__('services.' + service_name)
-	service = getattr(services, service_name)
-	installed_services = json.loads(node.services or '[]')
-	
-	if getattr(service, 'NEED_INSTALLED', False):
-		if not service_name in installed_services:
-			raise ServiceNotInstalled("%s require installation" % service_name)
+	service = get_service(service_name)
+	if service.NEED_INSTALLED and not service_name in installed_services:
+		raise ServiceNotInstalled("%s require installation" % service_name)
 	
 	# check 
-	if not getattr(service, 'HANDLE_ARGS', False):
+	if not service.HANDLE_ARGS:
 		for arg in service_args:
 			if arg.startswith('_'):
 				raise AttributeError(arg)
@@ -33,7 +29,7 @@ def dispatch(node, service_args):
 	
 	# run 
 	env.node = node
-	if not getattr(service, 'HANDLE_ARGS', False):
+	if not service.HANDLE_ARGS:
 		service.init()
 		for arg in service_args:
 			getattr(service, arg)()
