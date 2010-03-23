@@ -1,8 +1,12 @@
 #-*- coding:utf-8 -*-
 """
-Edit node information
+Install SSH Public Key
 
-usage: boatyard node [nodename] publickey install username [key]
+usage: 
+
+boatyard node [nodename] publickey install [username] [keyname]
+boatyard node [nodename] publickey install [username] // username==keyname
+
 """
 
 from fabric.api import *
@@ -20,6 +24,8 @@ def init(*args):
 
 	if args[0] == 'install':
 		return install(*args[1:])
+
+	raise AttributeError
 		
 def install(*args):
 	if len(args) > 2:
