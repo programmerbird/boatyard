@@ -4,8 +4,8 @@ Install SSH Public Key
 
 usage: 
 
-boatyard node [nodename] publickey install [username] [keyname]
-boatyard node [nodename] publickey install [username] // username==keyname
+boatyard node [nodename] authorized_keys add [keyname] to [username] 
+boatyard node [nodename] authorized_keys add [keyname] // username==keyname
 
 """
 
@@ -22,17 +22,17 @@ def init(*args):
 	env.password = env.node.get_password()
 	env.host_string = 'root@%s' % env.node.get_public_ip()[0]
 
-	if args[0] == 'install':
-		return install(*args[1:])
+	if args[0] == 'add':
+		return add(*args[1:])
 
 	raise AttributeError
 		
-def install(*args):
-	if len(args) > 2:
+def add(*args):
+	if len(args) not in (1,3):
 		raise AttributeError
 		
-	username = args[0]
-	publickey = PublicKey.objects.get(name=args[-1])
+	publickey = PublicKey.objects.get(name=args[0])
+	username = args[-1]
 	
 	if username=='root':
 		env.home = '/root'
