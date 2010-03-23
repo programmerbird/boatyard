@@ -47,7 +47,6 @@ class Command(BaseCommand):
 			except Node.DoesNotExist:
 				args = [name] + args
 		if not node:
-			print "Please select node below:"
 			nodes = []
 			providers = Provider.objects.all()
 			for provider in providers:
@@ -55,26 +54,34 @@ class Command(BaseCommand):
 					Node.get(provider, node.name)
 					
 			nodes = Node.objects.order_by('name')
-			node = menu([ (node, unicode(node)) for node in nodes ])
+			for node in nodes:
+				print node
+			return 
 		if node:
 			if args:
 				# run service 
 				try:
 					dispatch(node, args)
+					exit(0)
 					return
 				except ImportError, e:
 					print e 
 				except AttributeError, e:
 					print e
 					dispatch(node, ['help', args[0]])
+					exit(0)
 					return 
 				except ServiceNotInstalled, e:
+					exit(0)
 					return 
+				except SystemExit:
+					exit(0)
 				except:
 					import traceback
 					traceback.print_exc()
+					exit(0)
 					return
-			
 			dispatch(node, ['help',])
+			exit(0)
 			
 

@@ -10,11 +10,16 @@ from servers.models import *
 class Command(BaseCommand):
 	def handle(self, *args, **kwargs):
 		provider = None
+		if args:
+			provider_name = args[0] 
+			try:
+				provider = Provider.objects.get(name=provider_name)
+			except Provider.DoesNotExist:
+				pass
 		if not provider:
-			print "Please select provider below:"
-			provider = menu([
-				(x, unicode(x)) for x in Provider.objects.all() 
-			])
+			for x in Provider.objects.all().order_by('name'):
+				print unicode(x)
+			return 
 			
 		if provider:
 			form = DRIVERS_MAP[provider.driver](data=json.loads(provider.storage))

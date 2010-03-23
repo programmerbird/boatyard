@@ -19,7 +19,7 @@ fi
 APPUSER=$1
 APP=$2
 CONFIG=${3:-boatyard}
-RANDOM=T0k2349H
+APPRANDOM=T0k2349H
 
 HOME=/etc/boatyard/templates/python-nginx
 GIT_PATH=/home/$APPUSER/$APP.git
@@ -48,7 +48,7 @@ cp $HOME/scripts/post-update hooks/post-update
 sed -i "s/{{BOATYARD_APP}}/$APP/g" hooks/post-update
 sed -i "s/{{BOATYARD_USER}}/$APPUSER/g" hooks/post-update
 sed -i "s/{{BOATYARD_CONFIG}}/$CONFIG/g" hooks/post-update
-sed -i "s/{{BOATYARD_RANDOM}}/$RANDOM/g" hooks/post-update
+sed -i "s/{{BOATYARD_RANDOM}}/$APPRANDOM/g" hooks/post-update
 
 chmod +x hooks/post-update
 ln -s $APP_PATH/webs  target
@@ -57,19 +57,19 @@ cd $APP_PATH/scripts
 cp $HOME/app/scripts/daemon.sh daemon.sh 
 cp $HOME/app/scripts/nginx.conf nginx.conf 
 cp $HOME/app/scripts/uwsgi.conf uwsgi.conf 
-cp $HOME/app/scripts/wsgi.py wsgi_$APP$RANDOM.py 
+cp $HOME/app/scripts/wsgi.py wsgi_$APP$APPRANDOM.py 
 find . -name "*.*" -exec sed -i "s/{{BOATYARD_APP}}/$APP/g" {} \;
 find . -name "*.*" -exec sed -i "s/{{BOATYARD_USER}}/$APPUSER/g" {} \;
 find . -name "*.*" -exec sed -i "s/{{BOATYARD_CONFIG}}/$CONFIG/g" {} \;
-find . -name "*.*" -exec sed -i "s/{{BOATYARD_RANDOM}}/$RANDOM/g" {} \;
+find . -name "*.*" -exec sed -i "s/{{BOATYARD_RANDOM}}/$APPRANDOM/g" {} \;
 
 ln -s $APP_PATH/scripts/nginx.conf /etc/boatyard/configs/$APP
 cp daemon.sh /etc/init.d/boatyard-$APP
 
 cd $APP_PATH
-if [ ! -d "$APP$RANDOM" ]
+if [ ! -d "$APP$APPRANDOM" ]
 then
-	ln -s webs $APP$RANDOM
+	ln -s webs $APP$APPRANDOM
 fi
 
 chown -R $APPUSER:$APPUSER $APP_PATH

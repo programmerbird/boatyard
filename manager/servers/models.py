@@ -7,6 +7,7 @@ from django.conf import settings
 from django.utils import simplejson as json
 from libcloud.types import Provider as types
 from libcloud.providers import get_driver
+import os 
 
 class RackspaceDriver (forms.Form):
 	username = forms.CharField()
@@ -29,6 +30,7 @@ class EC2Driver (forms.Form):
 		slug = 'EC2'
 		fields = ('access_key_id', 'secret_key',)
 
+STORE_ROOT_PASSWORD = getattr(settings, 'STORE_ROOT_PASSWORD', True)
 
 DRIVERS = [
 	EC2Driver,
@@ -40,6 +42,7 @@ DRIVERS_MAP = dict([ (getattr(types, x.Meta.slug), x) for x in DRIVERS ])
 DRIVERS_CHOICES = [ (getattr(types, x.Meta.slug), x.Meta.slug) for x in DRIVERS ]
 
 class Provider (models.Model):
+	name = models.CharField(max_length=200)
 	driver = models.IntegerField(choices=DRIVERS_CHOICES)
 	storage = models.TextField()
 	
@@ -64,9 +67,34 @@ class Provider (models.Model):
 		return DRIVERS_MAP[self.driver].Meta.slug
 			
 	def __unicode__(self):
-		return self.get_driver_name() + ' ' + self.storage
+		return self.name
+		
+	def get_node(self, name):
+		if isinstance(name, Node):
+			name = node.name
+		if isinstance(name, basestring):
+			nodes = self.get_driver().list_nodes()
+			for x in nodes:
+				if x.name == name:
+					return x
+		return name
 
-
+	def set_password(self, node, password):
+		driver_name = self.get_driver_name()
+		if driver_name == 'RACKSPACE':
+			node = self.get_node(node)
+			if not node:
+				raise Exception("[%s] unknown node" % node)
+			uri = "/servers/%s" % node.id
+			body = json.dumps({
+				"server": {
+					"name": node.name, 
+					"adminPass": password,
+				}
+			})
+			resp = self.get_driver().connection.request(uri, method='PUT', data=body)
+			return resp 
+		raise NotImplemented
 
 class Node(models.Model):
 	name = models.CharField(max_length=200)
@@ -75,15 +103,26 @@ class Node(models.Model):
 	storage = models.TextField(null=True, blank=True, editable=False)
 	
 	username = models.CharField(max_length=200, default='root')
+	password = models.CharField(max_length=200, null=True, blank=True, editable=False)
+	
 	public_ip = models.TextField(null=True, blank=True)
 	private_ip = models.TextField(null=True, blank=True)
 	
-	def get_public_ip(self):
-		if not self.provider:
-			return json.loads(self.public_ip)
-		else:
-			conn = self.get_connection()
-			return conn.public_ip
+	def set_password(self, password):
+		if self.provider:
+			return self.provider.set_password(self.name, password)
+		raise NotImplemented
+			
+	def get_password(self):
+		if self.password:
+			return self.password 
+		password = os.urandom(8).encode('hex')
+		self.set_password(password)
+		if STORE_ROOT_PASSWORD:
+			self.password = password 
+			self.save()
+		return password 
+			
 			
 	def get_storage(self):
 		try:
@@ -99,11 +138,28 @@ class Node(models.Model):
 		self.get_storage()[service] = value 
 		
 	def get_private_ip(self):
-		if not self.provider:
-			return json.loads(self.private_ip)
-		else:
-			conn = self.get_connection()
-			return conn.private_ip
+		try:
+			return self._private_ip
+		except AttributeError:
+			if not self.private_ip:
+				self._private_ip = s = self.get_connection().private_ip
+				self.private_ip = json.dumps(s)
+				self.save()
+				return s
+			self._private_ip = s = json.loads(self.private_ip)			
+			return s
+
+	def get_public_ip(self):
+		try:
+			return self._public_ip
+		except AttributeError:
+			if not self.public_ip:
+				self._public_ip = s = self.get_connection().public_ip
+				self.public_ip = json.dumps(s)
+				self.save()
+				return s
+			self._public_ip = s = json.loads(self.public_ip)			
+			return s
 					
 	def get_connection(self):
 		try:
@@ -145,7 +201,7 @@ class Node(models.Model):
 			
 	def __unicode__(self):
 		if self.provider:
-			return self.name + ' [ ' + self.provider.get_driver_name() + ' ] '
+			return self.name + ' [ ' + self.provider.name + ' ] '
 		else:
 			return self.name
 		

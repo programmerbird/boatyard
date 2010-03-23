@@ -10,18 +10,19 @@ from servers.models import *
 class Command(BaseCommand):
 	def handle(self, *args, **kwargs):
 		form = None
-		if args:
-			driver = args[0]
-			for x in DRIVERS:
-				if x.Meta.slug.lower() == driver.lower():
-					form = x()
-		if not form:
-			print "Please select driver below:"
-			form = menu([
-				(x(), x.Meta.slug) for x in DRIVERS 
-			])
+		if not args:
+			raise Exception("Usage: boatyard provider-add [name]")
+		name = args[0]
+		if Provider.objects.filter(name=name):
+			raise Exception("[%s] alread existed" % name)
+			
+		print "Please select driver below:"
+		form = menu([
+			(x(), x.Meta.slug) for x in DRIVERS 
+		])
 		form = new_form(form)
 		p = Provider()
+		p.name = name 
 		p.driver = getattr(types, form.Meta.slug)
 		p.storage = json.dumps(form.data)
 		p.save()
