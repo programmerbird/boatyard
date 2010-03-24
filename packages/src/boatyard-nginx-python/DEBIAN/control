@@ -5,7 +5,7 @@ Priority: optional
 Architecture: all
 Essential: no
 Pre-Depends: boatyard-nginx, python (>=2.6), python-setuptools
-Depends: python-dev, libmysqlclient-dev
+Depends: python-dev, libmysqlclient-dev, git-core
 Installed-Size: 1024
 Maintainer: Sittipon Simasanti [ssimasanti@gmail.com]
 Description: Bird Django Web Server
