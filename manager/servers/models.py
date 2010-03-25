@@ -95,6 +95,14 @@ class Provider (models.Model):
 			resp = self.get_driver().connection.request(uri, method='PUT', data=body)
 			return resp 
 		raise NotImplemented
+		
+class Session(models.Model):
+	name = models.CharField(max_length=200, primary_key=True)
+	value = models.TextField()
+
+
+class NoNodeSelected(Exception):
+	pass 
 
 class Node(models.Model):
 	name = models.CharField(max_length=200)
@@ -108,6 +116,14 @@ class Node(models.Model):
 	public_ip = models.TextField(null=True, blank=True)
 	private_ip = models.TextField(null=True, blank=True)
 	
+	@classmethod
+	def current(cls):
+		try:
+			name = Session.objects.get(name='node').value
+			return Node.by_name(name)
+		except Session.DoesNotExist:
+			raise NoNodeSelected()
+			
 	def set_password(self, password):
 		if self.provider:
 			return self.provider.set_password(self.name, password)
@@ -123,12 +139,18 @@ class Node(models.Model):
 			self.save()
 		return password 
 			
+	def get_services(self):
+		try:
+			return self._services
+		except AttributeError:
+			self._services = s = json.loads(self.services or '[]')
+			return s 
 			
 	def get_storage(self):
 		try:
 			return self._storage
 		except AttributeError:
-			self._storage = s = json.loads(self.storage)
+			self._storage = s = json.loads(self.storage or '{}')
 			return s 
 				
 	def get_service_storage(self, service):
@@ -193,6 +215,8 @@ class Node(models.Model):
 	def save(self, *args, **kwargs):
 		if hasattr(self, '_storage'):
 			self.storage = json.dumps(self._storage)
+		if hasattr(self, '_services'):
+			self.services = json.dumps(self._services)
 		if self.public_ip and not self.public_ip.startswith('['):
 			self.public_ip = json.dumps([self.public_ip])
 		if self.private_ip and not self.private_ip.startswith('['):
@@ -200,10 +224,7 @@ class Node(models.Model):
 		super(Node, self).save(*args, **kwargs)
 			
 	def __unicode__(self):
-		if self.provider:
-			return self.name + ' [ ' + self.provider.name + ' ] '
-		else:
-			return self.name
+		return self.name
 		
 
 		
