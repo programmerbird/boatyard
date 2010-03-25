@@ -22,7 +22,7 @@ testproject:
 	django-admin.py startproject testproject 
 	echo "from settings import *" > testproject/settings_boatyard.py 
 	echo 'ROOT_URLCONF = "urls"' >> testproject/settings_boatyard.py
-	echo "Django==1.1.1" >> testproject/requirements.txt
+	echo "Django==1.1.1" >> testproject/requirements.ini
 	cd testproject; git init; git add .; git commit -a -m "initial import"; cd -
 
 testaccount:
