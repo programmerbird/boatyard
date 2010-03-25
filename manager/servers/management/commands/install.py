@@ -17,6 +17,7 @@ class Command(BaseCommand):
 			
 		name = args[0]
 		node = Node.current()
+		print node
 		if name in node.get_services():
 			print "[%s] already installed" % name 
 			return 
