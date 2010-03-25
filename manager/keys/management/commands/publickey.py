@@ -1,41 +1,43 @@
 #-*- coding:utf-8 -*-
 
-from django.core.management.base import NoArgsCommand, BaseCommand
+from django.core.management.base import NoArgsCommand, BaseCommand, CommandError
 from django.db.models.query_utils import CollectedObjects
 from django import forms
 from servers.console import menu, new_form, edit_form
 from keys.models import *
-from keys import forms
+
+
+Model = PublicKey
+
+class UsageError(CommandError):
+	def __init__(self, txt):
+		super(UsageError, self).__init__("Usage: boatyard publickey " + txt)
 
 class Command(BaseCommand):
 	def handle(self, *args, **kwargs):
-		publickey = None
+		if args:
+			cmd = args[0]
+			if cmd in ('add', 'mv', 'rm',):
+				return getattr(self, cmd)(*args[1:])
+				
 		if not args:
-			for x in PublicKey.objects.all().order_by('name'):
+			for x in Model.objects.all().order_by('name'):
 				print unicode(x)
 			return 
-			
-		name = args[0] 
-		if name in ('add', 'mv', 'rm'):
-			return getattr(self, name)(*args[1:])
-			
-		try:
-			publickey = PublicKey.objects.get(name=name)
-			print publickey.content
-		except PublicKey.DoesNotExist:
-			pass
-			
-	def add(self, *args, **kwargs):
-		form = None
-		if not args:
-			print "Usage: boatyard publickey add [name] < ~/.ssh/id_rsa.pub"
-			return 
-			
-		name = args[0]
-		if PublicKey.objects.filter(name=name):
-			print "[%s] already existed" % name
-			return
 		
+		name = args[0] 
+		obj = Model.objects.get(name=name)
+		print obj.content
+
+
+	def add(self, *args, **kwargs):
+		if len(args)!=1:
+			raise UsageError("add <name> < ~/.ssh/id_rsa.pub")
+
+		name = args[0]
+		if Model.objects.filter(name=name):
+			raise CommandError("[%s] alread existed" % name)
+
 		import sys 
 		content = ''.join(sys.stdin.readlines())
 		if content:
@@ -44,35 +46,35 @@ class Command(BaseCommand):
 			n.content = content 
 			n.save()
 		else:
-			print "no key specific"
-			
+			raise CommandError("no key specific")
+					
 	def mv(self, *args, **kwargs):
 		if len(args) != 2:
-			print "Usage: boatyard publickey mv [name] [new-name]"
-			return
+			raise UsageError("mv <name> <newname>")
+			
 		name = args[0]
 		new_name = args[1]
 		
 		try:
-			publickey = PublicKey.objects.get(name=name)
-		except PublicKey.DoesNotExist:
-			raise Exception("[%s] does not exists" % name)
-		if PublicKey.objects.filter(name=new_name):
-			raise Exception("[%s] alread existed" % new_name)
-			
-		publickey.name = new_name
-		publickey.save()
-
+			obj = Model.objects.get(name=name)
+		except Model.DoesNotExist:
+			raise CommandError("[%s] does not exists" % name)
+		if Model.objects.filter(name=new_name):
+			raise CommandError("[%s] alread existed" % new_name)
+		obj.name = new_name
+		obj.save()
+		
+		
 	def rm(self, *args, **kwargs):
 		if len(args) != 1:
-			print "Usage: boatyard publickey rm [name]"
-			return 
-		name = args[0]
-		
-		try:
-			publickey = PublicKey.objects.get(name=name)
-		except PublicKey.DoesNotExist:
-			raise Exception("[%s] does not exists" % name)
-		publickey.delete()
-
+			raise UsageError("rm <name>")
 			
+		name = args[0]
+		try:
+			obj = Model.objects.get(name=name)
+		except Model.DoesNotExist:
+			raise CommandError("[%s] does not exists" % name)
+		obj.delete()
+
+
+

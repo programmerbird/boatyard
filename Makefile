@@ -9,7 +9,7 @@ upload: all
 	cd packages/deb; s3cmd sync --acl-public ./ s3://boatyard/repositories/debian/
 	
 clean: 
-	find . -mindepth 2 -maxdepth 2 -name "Makefile" | sed "s/Makefile//g" | sed "s/.*/make -C \\0 clean/g" | sh
+	find . -mindepth 2 -maxdepth 4 -name "Makefile" | sed "s/Makefile//g" | sed "s/.*/make -C \\0 clean/g" | sh
 
 setupgit:
 	@echo "" > .git/info/exclude
