@@ -1,21 +1,15 @@
-all: ../deb/binary/boatyard.deb ../deb/binary/boatyard-nginx.deb ../deb/binary/boatyard-nginx-python.deb
+all: ../boatyard.deb ../boatyard-nginx.deb ../boatyard-nginx-python.deb
 
-../deb/binary/boatyard.deb:
-	mkdir -p ../deb
-	mkdir -p ../deb/binary
+../boatyard.deb:
 	find . -name "*~" -exec rm -f {} \;
 	dpkg -b boatyard $@
 	
-../deb/binary/boatyard-nginx.deb: 
-	mkdir -p ../deb
-	mkdir -p ../deb/binary
+../boatyard-nginx.deb: 
 	make -C boatyard-nginx all
 	find boatyard-nginx -name "*~" -exec rm -f {} \;
 	dpkg -b boatyard-nginx/deb $@
 	
-../deb/binary/boatyard-nginx-python.deb:
-	mkdir -p ../deb
-	mkdir -p ../deb/binary
+../boatyard-nginx-python.deb:
 	find . -name "*~" -exec rm -f {} \;
 	dpkg -b boatyard-nginx-python $@
 	

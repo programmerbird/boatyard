@@ -14,9 +14,9 @@ testenv: deb-packages
 	sudo dpkg -r boatyard
 	sudo rm -rf /etc/nginx
 	sudo rm -rf /etc/boatyard
-	sudo dpkg -i deb/binary/boatyard.deb 
-	sudo dpkg -i deb/binary/boatyard-nginx.deb 
-	sudo dpkg -i deb/binary/boatyard-nginx-python.deb 
+	sudo dpkg -i boatyard.deb 
+	sudo dpkg -i boatyard-nginx.deb 
+	sudo dpkg -i boatyard-nginx-python.deb 
 	
 testproject:
 	django-admin.py startproject testproject 
