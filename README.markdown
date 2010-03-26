@@ -1,5 +1,3 @@
-# Boatyard 
-
 ## Who Should Use Boatyard ?
 
 If you just want to use it, you are not. 
@@ -34,5 +32,6 @@ Add our repository to your /etc/apt/sources.list
 
 Install Package
 
+    sudo aptitude update 
     sudo aptitude install boatyard-nginx-python
     
