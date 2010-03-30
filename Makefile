@@ -1,7 +1,6 @@
 
 all: deb-packages
 
-
 deb-packages: build/boatyard.deb build/boatyard-nginx.deb build/boatyard-nginx-python.deb
 
 build/boatyard.deb:
@@ -14,7 +13,7 @@ build/boatyard-nginx.deb:
 	mkdir -p build
 	make -C boatyard-nginx all
 	find boatyard-nginx -name "*~" -exec rm -f {} \;
-	echo 'VERSION=`git describe`; sed -i "s@^Version.*@Version\: $${VERSION}@g" boatyard-nginx/deb/DEBIAN/control' | sh
+	echo 'VERSION=`git describe`; NGINX=`grep "NGINX_VERSION\=" boatyard-nginx/nginx/Makefile | cut -d"=" -f 2`; sed -i "s@^Version.*@Version\: $${VERSION}~nginx$${NGINX}@g" boatyard-nginx/deb/DEBIAN/control' | sh
 	dpkg -b boatyard-nginx/deb $@
 	
 build/boatyard-nginx-python.deb:
