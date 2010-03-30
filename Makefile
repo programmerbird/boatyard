@@ -5,16 +5,22 @@ all: deb-packages
 deb-packages: build/boatyard.deb build/boatyard-nginx.deb build/boatyard-nginx-python.deb
 
 build/boatyard.deb:
+	mkdir -p build
 	find . -name "*~" -exec rm -f {} \;
+	echo 'VERSION=`git describe`; sed -i "s@^Version.*@Version\: $${VERSION}@g" boatyard/DEBIAN/control' | sh
 	dpkg -b boatyard $@
 	
 build/boatyard-nginx.deb: 
+	mkdir -p build
 	make -C boatyard-nginx all
 	find boatyard-nginx -name "*~" -exec rm -f {} \;
+	echo 'VERSION=`git describe`; sed -i "s@^Version.*@Version\: $${VERSION}@g" boatyard-nginx/deb/DEBIAN/control' | sh
 	dpkg -b boatyard-nginx/deb $@
 	
 build/boatyard-nginx-python.deb:
+	mkdir -p build
 	find . -name "*~" -exec rm -f {} \;
+	echo 'VERSION=`git describe`; sed -i "s@^Version.*@Version\: $${VERSION}@g" boatyard-nginx-python/DEBIAN/control' | sh
 	dpkg -b boatyard-nginx-python $@
 	
 clean: 
