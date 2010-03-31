@@ -1,5 +1,5 @@
 Package: boatyard-nginx
-Version: 0.9~nginx0.7.65
+Version: 1.1~nginx0.7.65
 Architecture: amd64
 Maintainer: Sittipon Simasanti <ssimasanti@gmail.com>
 Installed-Size: 860
