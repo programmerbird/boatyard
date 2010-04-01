@@ -54,5 +54,6 @@ if [ -x "/etc/init.d/nginx" ]; then
 fi
 # End automatically added section
 
+/etc/init.d/nginx restart
 
 exit 0
