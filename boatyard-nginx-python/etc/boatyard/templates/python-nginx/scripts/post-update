@@ -14,7 +14,6 @@
 git-update-server-info
 
 is_bare=$(git-config --get --bool core.bare)
-is_bare="false"
 
 APP_PATH=/home/{{BOATYARD_USER}}/deployed-apps/{{BOATYARD_APP}}
 
@@ -85,13 +84,13 @@ then
 			update_wc $ref
 		fi
 	done
-	
-	
-	if [ -f "$APP_PATH/webs/requirements.ini" ]
-	then 
-		$APP_PATH/env/bin/pip install -r "$APP_PATH/webs/requirements.ini"
-	fi
-	/etc/init.d/boatyard-{{BOATYARD_APP}} reload
 fi
+
+	
+if [ -f "$APP_PATH/webs/requirements.ini" ]
+then 
+	$APP_PATH/env/bin/pip install -r "$APP_PATH/webs/requirements.ini" | sed "s@$APP_PATH/webs/@@g" | sed "s@$APP_PATH/env/@@g"
+fi
+/etc/init.d/boatyard-{{BOATYARD_APP}} reload
 
 
