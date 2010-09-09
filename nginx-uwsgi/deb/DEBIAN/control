@@ -1,5 +1,5 @@
 Package: nginx-uwsgi
-Version: nginx-uwsgi-2-gce63336
+Version: nginx-uwsgi-3-gb6c583c
 Architecture: amd64
 Maintainer: Sittipon Simasanti <ssimasanti@gmail.com>
 Installed-Size: 860

@@ -4,7 +4,7 @@ all: deb-packages
 deb-packages: build/nginx-uwsgi.deb
 	
 build/nginx-uwsgi.deb:
-	cd nginx-uwsgi; make
+	cd nginx-uwsgi; make all
 	mkdir -p build
 	find . -name "*~" -exec rm -f {} \;
 	echo 'VERSION=`git describe --tags`; sed -i "s@^Version.*@Version\: $${VERSION}@g" nginx-uwsgi/deb/DEBIAN/control' | sh

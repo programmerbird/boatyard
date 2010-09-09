@@ -1,14 +1,14 @@
-all: deb 
+all: deb-packages 
 
-deb:
-	make -C nginx all
+deb-packages:
+	cd nginx; make all
 	mkdir -p deb/etc/
 	cp -rf nginx/build/uwsgi deb/etc/uwsgi
-	make -C nginx build/nginx
+	cd nginx; make build/nginx
 	mkdir -p deb/usr/sbin/
 	cp -rf nginx/build/nginx deb/usr/sbin/nginx
 	
 clean:
-	make -C nginx clean
+	cd nginx; make clean
 	rm -rf deb/usr/sbin/nginx
 	rm -rf deb/etc/uwsgi
