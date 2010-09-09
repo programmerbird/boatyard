@@ -1,7 +1,9 @@
 
 
-NGINX_VERSION=0.7.65
-UWSGI_VERSION=0.9.4.2
+NGINX_VERSION=0.7.67
+UWSGI_VERSION=0.9.4.5
+
+REQUIRED_PACKAGES=libssl-dev libcurl-ssl-dev libpcre++-dev libpcre3-dev libxml2-dev
 
 NGINX=nginx-${NGINX_VERSION}
 UWSGI=uwsgi-${UWSGI_VERSION}
@@ -27,9 +29,9 @@ NGINX_OPTS= --conf-path=/etc/nginx/nginx.conf \
         --with-mail \
         --with-mail_ssl_module \
 	    --with-ipv6 \
-        --add-module=${CURDIR}/../${UWSGI}/nginx
+        --add-module=${CURDIR}/../${UWSGI}/nginx/
 
-all: build/nginx build/uwsgi
+all: build/uwsgi build/nginx 
 
 src/${NGINX}.tar.gz:
 	mkdir -p src 
@@ -41,15 +43,14 @@ src/${UWSGI}.tar.gz:
 
 build/uwsgi: src/${UWSGI}.tar.gz
 	mkdir -p build
-	rm -rf build/uwsgi
-	rm -rf build/${UWSGI}
+	rm -rf build/uwsgi*
 	tar -C build/ -xvzf src/${UWSGI}.tar.gz 
 	cd build/${UWSGI}; make -f Makefile.Py26; cd -
 	cp -rf build/${UWSGI} build/uwsgi
 	
 build/nginx: src/${NGINX}.tar.gz build/uwsgi
 	mkdir -p build
-	rm -rf build/${NGINX}
+	rm -rf build/nginx*
 	tar -C build/ -xvzf src/${NGINX}.tar.gz
 	cd build/${NGINX}; ./configure ${NGINX_OPTS}; make; make -f objs/Makefile objs/nginx; cd -
 	cp build/${NGINX}/objs/nginx build/nginx
