@@ -1,6 +1,0 @@
-#!/bin/sh
-
-easy_install "pip>=0.6.3"
-pip install "virtualenv>=1.4.5"
-ln -s /etc/boatyard/templates/python-nginx/deploy.sh /usr/bin/boatyard-startapp-python
-

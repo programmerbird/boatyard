@@ -1,9 +1,0 @@
-/var/log/boatyard/*.access /var/log/boatyard/*.error {
-        daily
-        missingok
-        rotate 90
-        compress
-        delaycompress
-        notifempty
-        create 640 boatyard boatyard
-}

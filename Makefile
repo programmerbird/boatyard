@@ -1,26 +1,13 @@
 
 all: deb-packages
 
-deb-packages: build/boatyard.deb build/boatyard-nginx.deb build/boatyard-nginx-python.deb
-
-build/boatyard.deb:
+deb-packages: build/nginx-uwsgi.deb
+	
+build/nginx-uwsgi.deb:
 	mkdir -p build
 	find . -name "*~" -exec rm -f {} \;
-	echo 'VERSION=`git describe`; sed -i "s@^Version.*@Version\: $${VERSION}@g" boatyard/DEBIAN/control' | sh
-	dpkg -b boatyard $@
-	
-build/boatyard-nginx.deb: 
-	mkdir -p build
-	make -C boatyard-nginx all
-	find boatyard-nginx -name "*~" -exec rm -f {} \;
-	echo 'VERSION=`git describe`; NGINX=`grep "NGINX_VERSION\=" boatyard-nginx/nginx/Makefile | cut -d"=" -f 2`; sed -i "s@^Version.*@Version\: $${VERSION}~nginx$${NGINX}@g" boatyard-nginx/deb/DEBIAN/control' | sh
-	dpkg -b boatyard-nginx/deb $@
-	
-build/boatyard-nginx-python.deb:
-	mkdir -p build
-	find . -name "*~" -exec rm -f {} \;
-	echo 'VERSION=`git describe`; sed -i "s@^Version.*@Version\: $${VERSION}@g" boatyard-nginx-python/DEBIAN/control' | sh
-	dpkg -b boatyard-nginx-python $@
+	echo 'VERSION=`git describe`; sed -i "s@^Version.*@Version\: $${VERSION}@g" nginx-uwsgi/DEBIAN/control' | sh
+	dpkg -b nginx-python $@
 	
 clean: 
 	make -C boatyard-nginx clean
